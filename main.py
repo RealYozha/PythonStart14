@@ -3,36 +3,33 @@ from pathlib import Path
 import shutil
 
 
-def get_ext(filename: str) -> str:
-    extension = Path(filename).suffix
-    return extension
+IMAGES_DIRECTORY = "./assets/pictures"
 
 
-def download_image(url: str, path: str, name_ext: str) -> None:
-    image = requests.get(url=url)
-    image.raise_for_status()
+def download_image(image: str, path: str, name_ext: str) -> None:
     with open(path / name_ext, "wb") as file:
-        file.write(image.content)
+        file.write(image)
 
 
 def get_dog() -> str:
-    response = requests.get(url="https://random.dog/woof")
+    payload = {"filter": "mp4,webm"}
+    response = requests.get(url="https://random.dog/woof.json", params=payload)
     response.raise_for_status()
-    return response.text
+    return response.json()['url']
 
 
 def main() -> None:
-    shutil.rmtree("./assets/pictures")
-    pictures_folder = Path("./assets/pictures")
+    # i dare if u will send this back again
+    # for the 6th time and not even say wtf is wrong
+    pictures_folder = Path(IMAGES_DIRECTORY)
+    if pictures_folder.exists():
+        shutil.rmtree(IMAGES_DIRECTORY)
     pictures_folder.mkdir(parents=True, exist_ok=False)
-    for i in range(10):
-        file_name: str = get_dog()
-        file_ext: str = get_ext(file_name)
-        if file_ext not in [".mp4", ".webm"]:
-            file_link: str = f"https://random.dog/{file_name}"
-            download_image(file_link,
-                           pictures_folder,
-                           f"dog_{i}{file_ext}")
+    for i in range(50):
+        link = get_dog()
+        image = requests.get(url=link)
+        image.raise_for_status()
+        download_image(image.content)
 
 
 if __name__ == '__main__':
