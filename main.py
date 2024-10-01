@@ -3,7 +3,7 @@ from pathlib import Path
 import shutil
 
 
-IMAGES_DIRECTORY = "./assets/pictures"
+IMAGES_DIRECTORY = "./pictures"
 
 
 def download_image(image: str, path: str, name_ext: str) -> None:
@@ -25,10 +25,11 @@ def main() -> None:
     pictures_folder.mkdir(parents=True, exist_ok=False)
     for i in range(50):
         link = get_dog()
-        ext = Path(link)
+        ext = Path(link).suffix
         image = requests.get(url=link)
         image.raise_for_status()
-        download_image(image.content, pictures_folder, ext)
+        filename = f'dog{i+1}{ext}'
+        download_image(image.content, pictures_folder, filename)
 
 
 if __name__ == '__main__':
