@@ -19,17 +19,16 @@ def get_dog() -> str:
 
 
 def main() -> None:
-    # i dare if u will send this back again
-    # for the 6th time and not even say wtf is wrong
     pictures_folder = Path(IMAGES_DIRECTORY)
     if pictures_folder.exists():
         shutil.rmtree(IMAGES_DIRECTORY)
     pictures_folder.mkdir(parents=True, exist_ok=False)
     for i in range(50):
         link = get_dog()
+        ext = Path(link)
         image = requests.get(url=link)
         image.raise_for_status()
-        download_image(image.content)
+        download_image(image.content, pictures_folder, ext)
 
 
 if __name__ == '__main__':
